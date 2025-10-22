@@ -1,0 +1,51 @@
+// proto/agent_service.proto
+syntax = "proto3";
+
+package agent_service;
+// Define the Go package path using the new GitHub repository
+option go_package = "github.com/kaili-yang/structView-agent/backend/pkg/agentservice";
+
+// --- Service Definition ---
+service AIService {
+  // BK-01 Test Task: Ensures the communication link is functional
+  rpc Ping(PingRequest) returns (PingResponse);
+
+  // AI-01 Core Task: Request AI to perform structured data extraction
+  rpc ExtractFeatures(FeatureExtractRequest) returns (FeatureExtractResponse);
+
+  // BK-02/FE-03 History Tasks: Save and retrieve extracted records
+  rpc SaveExtractedRecord(ExtractedRecord) returns (Empty);
+  rpc GetExtractionHistory(Empty) returns (ExtractionHistoryResponse);
+}
+
+// --- Message Definitions remain the same ---
+message Empty {}
+// ... (rest of the message definitions: PingRequest, FeatureExtractRequest, etc.)
+message PingRequest {
+  string message = 1;
+}
+message PingResponse {
+  string reply = 1;
+}
+
+message FeatureExtractRequest {
+  string page_url = 1;
+  string page_text = 2; // Clean plain text content of the current page
+  repeated string extraction_fields = 3; // List of fields the user wants to extract
+}
+
+message FeatureExtractResponse {
+  string extracted_json = 1; // AI's returned structured JSON string
+  string error_message = 2; // Error message if extraction fails
+}
+
+message ExtractedRecord {
+  string id = 1;
+  string timestamp = 2;
+  string url = 3;
+  string extracted_data_json = 4; // Stores the extracted JSON result
+}
+
+message ExtractionHistoryResponse {
+  repeated ExtractedRecord records = 1;
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" http-equiv="Content-Security-Policy" content="
+        default-src 'self' data: 'unsafe-inline' about:;
+        script-src 'self' 'unsafe-eval' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline';
+        connect-src 'self' http://127.0.0.1:50051;
+    ">
+    <title>Data Forge: Intelligent Agent</title>
+
+    <style>
+        /* Basic CSS for a browser look and feel */
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden; /* Prevent body scroll */
+        }
+        
+        #toolbar { 
+            display: flex; 
+            padding: 8px 12px; 
+            background: #f1f1f1; /* Light gray toolbar */
+            align-items: center; 
+            border-bottom: 1px solid #ddd;
+        }
+        
+        #url-input { 
+            flex-grow: 1; 
+            margin: 0 10px; 
+            padding: 6px 10px; 
+            border-radius: 16px; /* Rounded look */
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 6px 12px;
+            margin-left: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-size: 13px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #content-area {
+            display: flex;
+            flex-grow: 1;
+        }
+
+        #webview-container { 
+            flex-grow: 1; 
+            position: relative;
+        }
+        
+        /* Must use <webview> tag for external content in Electron */
+        #content-webview {
+            width: 100%; 
+            height: 100%; 
+            display: inline-flex;
+            border: none;
+        }
+
+        #sidebar {
+            width: 350px; /* Dedicated width for the AI output */
+            border-left: 1px solid #ddd;
+            padding: 15px;
+            overflow-y: auto;
+            background: #fff;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #history-btn {
+            background-color: #6c757d;
+        }
+
+        #ping-btn {
+            background-color: #28a745; /* Success color */
+        }
+
+        #status-bar { 
+            padding: 5px 12px; 
+            background: #e9ecef; 
+            font-size: 0.8em; 
+            border-top: 1px solid #ddd;
+        }
+
+        /* AI Output Styling */
+        #ai-output-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #f0f0f0;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        
+        #ai-output-container h4 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        
+        #extracted-table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #e2e6ea;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <button id="back-btn">←</button>
+        <button id="forward-btn">→</button>
+        <input type="url" id="url-input" placeholder="Enter URL...">
+        <button id="go-btn">Go</button>
+        
+        <button id="extract-btn">Extract Features</button> 
+        
+        <button id="history-btn">History</button>
+        <button id="ping-btn">Ping Backend (Test)</button>
+    </div>
+    
+    <div id="content-area">
+        <div id="webview-container">
+            <webview id="content-webview" src="www.google.com"></webview>
+        </div>
+
+        <div id="sidebar">
+            <h3>AI Agent Output (ForgeAgent)</h3>
+            <p>Enter the fields you want to extract (comma separated):</p>
+            <input type="text" id="extraction-fields-input" 
+                   placeholder="e.g., Price, Key Features, Technology Stack" 
+                   style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;">
+
+            <div id="ai-output-container">
+                <h4>Extraction Results</h4>
+                <div id="extracted-table-container">
+                    <p>Click "Extract Features" to analyze the current page.</p>
+                </div>
+            </div>
+            
+            <div id="history-panel" style="margin-top: auto; padding-top: 10px; border-top: 1px solid #eee;">
+                <h4>History</h4>
+                <ul id="history-list">
+                    </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="status-bar">Status: Ready.</div>
+
+    <script>
+        // Use a standard script tag to link the renderer logic
+        document.write('<scr' + 'ipt src="./renderer.js"></scr' + 'ipt>');
+    </script>
+</body>
+</html>
